@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.RecordMapper">
+    <insert id="addRecord">
+        insert into record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordDate != null">record_date,</if>
+            <if test="steps != null">steps,</if>
+            <if test="planSummary != null">plan_summary,</if>
+            <if test="planAchieve != null">plan_achieve,</if>
+            <if test="weather != null">weather,</if>
+            <if test="mood != null">mood,</if>
+            <if test="score != null">score,</if>
+            <if test="note != null">note,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordDate != null">#{recordDate},</if>
+            <if test="steps != null">#{steps},</if>
+            <if test="planSummary != null">#{planSummary},</if>
+            <if test="planAchieve != null">#{planAchieve},</if>
+            <if test="weather != null">#{weather},</if>
+            <if test="mood != null">#{mood},</if>
+            <if test="score != null">#{score},</if>
+            <if test="note != null">#{note},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRecord">
+        update record
+        <trim prefix="set" suffixOverrides=",">
+            <if test="steps != null">steps = #{steps},</if>
+            <if test="planSummary != null">plan_summary = #{planSummary},</if>
+            <if test="planAchieve != null">plan_achieve = #{planAchieve},</if>
+            <if test="weather != null">weather = #{weather},</if>
+            <if test="mood != null">mood = #{mood},</if>
+            <if test="score != null">score = #{score},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRecordById">
+        delete from record where id = #{id}
+    </delete>
+
+    <select id="selectRecordList" resultType="com.moon.dlog.domain.Record">
+        select
+            id,record_date,steps,plan_summary,plan_achieve,weather,mood,score,note
+        from
+            record
+        where 1 = 1
+            <if test="startTime != null and startTime != ''">and #{startTime} &lt;= record_date</if>
+            <if test="endTime != null and endTime != ''">and #{endTime} >= record_date</if>
+    </select>
+
+    <select id="selectRecordById" resultType="com.moon.dlog.domain.Record">
+        select
+            id,record_date,steps,plan_summary,plan_achieve,weather,mood,score,note
+        from
+            record
+        where
+            id = #{id}
+    </select>
+
+    <select id="selectReachStandardCurrentYearDays" resultType="java.lang.Integer">
+        select count(id) from record where score >= 3.5 and record_date &lt;= #{date}
+    </select>
+
+    <select id="selectEndDays" resultType="java.lang.Integer">
+        select DATEDIFF(#{date}, now())
+    </select>
+
+    <select id="selectTotalCount" resultType="java.lang.Integer">
+        select count(id) from record
+    </select>
+</mapper>

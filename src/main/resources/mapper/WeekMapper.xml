@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.WeekMapper">
+
+    <insert id="addWeek">
+        insert into week
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="week != null">week,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="week != null">#{week},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+        </trim>
+    </insert>
+
+    <insert id="addWeekPlan">
+        insert into week_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="weekPlanName != null">week_plan_name,</if>
+            <if test="weekId != null">week_id,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="weekPlanName != null">#{weekPlanName},</if>
+            <if test="weekId != null">#{weekId},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateProgress">
+        update week_plan set progress = #{progress}
+        where 1 = 1
+            <if test="planName != null">and week_plan_name = #{planName},</if>
+            and week_id = (SELECT id FROM week WHERE start_date &lt;= NOW() AND end_date > NOW())
+    </update>
+
+    <delete id="deleteWeekPlanById">
+        delete from week_plan where id = #{id}
+    </delete>
+
+    <select id="selectNewWeekId" resultType="java.lang.Long">
+        select id from week order by id desc limit 1
+    </select>
+
+    <select id="selectWeekList" resultType="com.moon.dlog.domain.Week">
+        select * from week
+    </select>
+
+    <select id="selectWeekPlanListById" resultType="com.moon.dlog.domain.WeekPlan">
+        SELECT
+            wp.`id`,
+            wp.`week_plan_name`,
+            wp.`progress`
+        FROM
+            `week` w
+        INNER JOIN week_plan wp
+            ON wp.`week_id` = w.`id`
+        WHERE w.id = #{id}
+    </select>
+
+    <select id="selectWeekPlanList" resultType="com.moon.dlog.domain.WeekPlan">
+        SELECT
+            wp.`id`,
+            wp.`week_plan_name`,
+            wp.`progress`
+        FROM
+            `week` w
+        INNER JOIN week_plan wp
+            ON wp.`week_id` = w.`id`
+        WHERE create_time >= #{startDate} AND create_time &lt; #{endDate}
+    </select>
+</mapper>

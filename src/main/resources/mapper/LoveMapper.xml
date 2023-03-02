@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.LoveMapper">
+    <insert id="addCard">
+        insert into lover_card
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cardTitle != null">card_title,</if>
+            <if test="cardContent != null">card_content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cardTitle != null">#{cardTitle},</if>
+            <if test="cardContent != null">#{cardContent},</if>
+        </trim>
+    </insert>
+
+    <select id="selectLoveDays" resultType="java.lang.Integer">
+        SELECT DATEDIFF(NOW(),'2021-10-03')
+    </select>
+
+    <select id="selectCardList" resultType="com.moon.dlog.domain.LoverCard">
+        select * from lover_card
+    </select>
+</mapper>

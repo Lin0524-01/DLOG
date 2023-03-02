@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.AccountMapper">
+
+    <insert id="insertAccount">
+        insert into account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="money != null">money,</if>
+            <if test="type != null">`type`,</if>
+            <if test="total != null">total,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="money != null">#{money},</if>
+            <if test="type != null">#{type},</if>
+            <if test="total != null">#{total},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountById">
+        update account
+        <trim prefix="set" suffixOverrides=",">
+            <if test="money != null">money = #{money},</if>
+            <if test="type != null">`type` = #{type},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+    </update>
+
+    <select id="selectAccountList" resultType="com.moon.dlog.domain.Account">
+        select * from account
+        where 1 = 1
+            <if test="type != null and type != ''">and `type` = #{type}</if>
+            <if test="startTime != null">and #{startTime} &lt;= create_time</if>
+            <if test="endTime != null">and #{endTime} >= create_time</if>
+            <if test="remark != null">and remark = #{remark}</if>
+        order by create_time desc
+    </select>
+
+    <select id="selectNewRow" resultType="com.moon.dlog.domain.Account">
+        select * from account order by create_time desc limit 1
+    </select>
+
+    <select id="selectCurrentMonthIncomeList" resultType="java.math.BigDecimal">
+        select * from account
+        where 1 = 1
+            <if test="type != null and type != ''">and `type` = #{type}</if>
+            <if test="startTime != null">and #{startTime} &lt;= create_time</if>
+            <if test="endTime != null">and #{endTime} >= create_time</if>
+    </select>
+
+    <select id="selectCurrentMonthDateList" resultType="java.util.Date">
+        SELECT
+            DISTINCT STR_TO_DATE(create_time, '%Y-%m-%d')
+        FROM
+            account
+        WHERE create_time >= #{startTime}
+            AND create_time &lt;= #{endTime}
+    </select>
+
+    <select id="selectIncomeAndExpenseToday" resultType="com.moon.dlog.domain.Account">
+        select
+            money
+        from
+            account
+        where 1 = 1
+            <if test="recordDate != null">and str_to_date(create_time, '%Y-%m-%d') = #{recordDate}</if>
+            <if test="type != null and type != ''">and `type` = #{type}</if>
+    </select>
+
+    <select id="selectTotalCount" resultType="java.lang.Integer">
+        select count(id) from account
+        where 1 = 1
+        <if test="type != null and type != ''">and `type` = #{type}</if>
+        <if test="startTime != null">and #{startTime} &lt;= create_time</if>
+        <if test="endTime != null">and #{endTime} >= create_time</if>
+    </select>
+
+    <select id="selectExpensePieDataCurrentMonth" resultType="com.moon.dlog.domain.Account">
+        SELECT
+            remark,SUM(money) money
+        FROM
+            account
+        WHERE
+            remark IN (SELECT DISTINCT remark FROM account WHERE TYPE = '0')
+                AND
+            create_time >= #{startTime} AND create_time &lt;= #{endTime} GROUP BY remark
+    </select>
+
+</mapper>

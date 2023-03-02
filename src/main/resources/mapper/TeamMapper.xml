@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.TeamMapper">
+    <insert id="insertPlayerInfo">
+        insert into player_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="playerAge != null">player_age,</if>
+            <if test="playerName != null">player_name,</if>
+            <if test="playerNumber != null">player_number,</if>
+            <if test="playerRole != null">player_role,</if>
+            <if test="playerBirth != null">player_birth,</if>
+            <if test="playerHeight != null">player_height,</if>
+            <if test="playerWeight != null">player_weight,</if>
+            <if test="playerCountry != null">player_country,</if>
+            <if test="playerDraft != null">player_draft,</if>
+            <if test="playerSalary != null">player_salary,</if>
+            <if test="playerContract != null">player_contract,</if>
+            <if test="playerSchool != null">player_school,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="playerAge != null">#{playerAge},</if>
+            <if test="playerName != null">#{playerName},</if>
+            <if test="playerNumber != null">#{playerNumber},</if>
+            <if test="playerRole != null">#{playerRole},</if>
+            <if test="playerBirth != null">#{playerBirth},</if>
+            <if test="playerHeight != null">#{playerHeight},</if>
+            <if test="playerWeight != null">#{playerWeight},</if>
+            <if test="playerCountry != null">#{playerCountry},</if>
+            <if test="playerDraft != null">#{playerDraft},</if>
+            <if test="playerSalary != null">#{playerSalary},</if>
+            <if test="playerContract != null">#{playerContract},</if>
+            <if test="playerSchool != null">#{playerSchool},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertTeamPlayer">
+        insert into team_player_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teamId != null">team_id,</if>
+            <if test="seasonId != null">season_id,</if>
+            <if test="playerId != null">player_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="teamId != null">#{teamId},</if>
+            <if test="seasonId != null">#{seasonId},</if>
+            <if test="playerId != null">#{playerId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTeamSeason">
+        update team_season
+        <trim prefix="set" suffixOverrides=",">
+            <if test="zoneRanking != null">zone_ranking = #{zoneRanking},</if>
+            <if test="scorePerGame != null">score_per_game = #{scorePerGame},</if>
+            <if test="backboardPerGame != null">backboard_per_game = #{backboardPerGame},</if>
+            <if test="assistPerGame != null">assist_per_game = #{assistPerGame},</if>
+            <if test="stealPerGame != null">steal_per_game = #{stealPerGame},</if>
+            <if test="blockPerGame != null">block_per_game = #{blockPerGame},</if>
+            <if test="mistakePerGame != null">mistake_per_game = #{mistakePerGame},</if>
+            <if test="mistakePerGame != null">mistake_per_game = #{mistakePerGame},</if>
+            <if test="foulPerGame != null">foul_per_game = #{foulPerGame},</if>
+            <if test="threeHitRate != null">three_hit_rate = #{threeHitRate},</if>
+            <if test="freeHitRate != null">free_hit_rate = #{freeHitRate},</if>
+            <if test="hitRate != null">hit_rate = #{hitRate},</if>
+            <if test="games != null">games = #{games}</if>
+        </trim>
+        where
+            <if test="teamId != null">team_id = #{teamId}</if>
+    </update>
+
+    <select id="selectTeamList" resultType="com.moon.dlog.domain.Team">
+        select
+            id, team_city, team_name, team_room, team_coach, team_partition, team_logo
+        from
+            team
+        where 1 = 1
+            <if test="teamCity != null and teamCity != ''">and team_city = #{teamCity}</if>
+            <if test="teamName != null and teamName != ''">and team_name = #{teamName}</if>
+            <if test="teamPartition != null and teamPartition != ''">and team_partition = #{teamPartition}</if>
+    </select>
+
+    <select id="selectTeamPartitionList" resultType="java.lang.String">
+        select
+            distinct team_partition
+        from
+            team
+    </select>
+
+    <select id="selectTeamGameInfoListCurrentSeason" resultType="com.moon.dlog.domain.vo.TeamData">
+        SELECT
+          *
+        FROM
+          team t
+          LEFT JOIN team_season ts
+            ON ts.`team_id` = t.`id`
+        WHERE t.id = #{id}
+    </select>
+
+    <select id="selectTeamPlayerList" resultType="com.moon.dlog.domain.TeamPlayer">
+        SELECT
+            pinfo.*
+        FROM
+            player_info pinfo
+        INNER JOIN team_player_info tp
+            ON tp.`player_id` = pinfo.`id` AND tp.`team_id` = #{id}
+    </select>
+
+    <select id="selectCurrentInsertPlayerId" resultType="java.lang.Long">
+        select id from player_info order by id desc limit 1
+    </select>
+
+    <select id="selectTeamIdByTeamName" resultType="java.lang.Long">
+        select id from team where team_name = #{teamName}
+    </select>
+
+    <select id="selectSeasonList" resultType="com.moon.dlog.domain.Season">
+        select * from season
+    </select>
+</mapper>

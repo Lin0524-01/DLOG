@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moon.dlog.mapper.CompanyMapper">
+
+    <insert id="addCompany">
+        insert into company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyName != null">company_name,</if>
+            <if test="companyLocation != null">company_location,</if>
+            <if test="companyStatus != null">company_status,</if>
+            <if test="companyScale != null">company_scale,</if>
+            <if test="post != null">post,</if>
+            <if test="salary != null">salary,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyLocation != null">#{companyLocation},</if>
+            <if test="companyStatus != null">#{companyStatus},</if>
+            <if test="companyScale != null">#{companyScale},</if>
+            <if test="post != null">#{post},</if>
+            <if test="salary != null">#{salary},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCompany">
+        update company
+        <trim prefix="set" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="companyLocation != null and companyLocation != ''">company_location = #{companyLocation},</if>
+            <if test="companyStatus != null and companyStatus != ''">company_status = #{companyStatus},</if>
+            <if test="companyScale != null and companyScale != ''">company_scale = #{companyScale},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="post != null and post != ''">post = #{post},</if>
+            <if test="salary != null and salary != ''">salary = #{salary},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectCompanyList" resultType="com.moon.dlog.domain.Company">
+        select * from company
+        where 1 = 1
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="companyLocation != null and companyLocation != ''">and company_location like concat('%', #{companyLocation}, '%')</if>
+            <if test="companyStatus != null and companyStatus != ''">and company_status = #{companyStatus}</if>
+            <if test="companyScale != null and companyScale != ''">and company_scale = #{companyScale}</if>
+            <if test="status != null and status != ''">and `status` = #{status}</if>
+        order by create_time
+    </select>
+
+    <select id="selectCompanyById" resultType="com.moon.dlog.domain.Company">
+        select * from company where id = #{id}
+    </select>
+
+    <select id="selectAllPostCount" resultType="java.lang.Integer">
+        select count(id) from company
+        <where>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="companyLocation != null and companyLocation != ''">and company_location like concat('%', #{companyLocation}, '%')</if>
+            <if test="companyStatus != null and companyStatus != ''">and company_status = #{companyStatus}</if>
+            <if test="companyScale != null and companyScale != ''">and company_scale = #{companyScale}</if>
+            <if test="status != null and status != ''">and `status` = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectOfferCount" resultType="java.lang.Integer">
+        select count(id) from company where `status` = '5'
+        <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+        <if test="companyLocation != null and companyLocation != ''">and company_location like concat('%', #{companyLocation}, '%')</if>
+        <if test="companyStatus != null and companyStatus != ''">and company_status = #{companyStatus}</if>
+        <if test="companyScale != null and companyScale != ''">and company_scale = #{companyScale}</if>
+        <if test="status != null and status != ''">and `status` = #{status}</if>
+    </select>
+
+    <select id="selectPostStatusCount" resultType="java.lang.Integer">
+        select count(id) from company
+        <where>
+            <if test="status != null and status != ''">status = #{status}</if>
+        </where>
+    </select>
+</mapper>
